@@ -8,7 +8,7 @@ const cooldowns = new Collection();
 module.exports = {
     name: "message",
     execute(message) {
-        const ownerIDs = [ "447997781190377484", "409623638913056779", "335186179521642498" ];
+        const ownerIDs = [ "447997781190377484", "409623638913056779", "335186179521642498", "415612627419398165" ];
 
         if (!message.content.toLowerCase().startsWith(process.env.PREFIX) || message.author.bot) {
             return;

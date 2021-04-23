@@ -1,6 +1,7 @@
 "use strict";
 
 const { Collection } = require("discord.js");
+const { owners } = require("../config.json");
 require("dotenv").config();
 
 const cooldowns = new Collection();
@@ -8,8 +9,6 @@ const cooldowns = new Collection();
 module.exports = {
     name: "message",
     execute(message) {
-        const ownerIDs = [ "447997781190377484", "409623638913056779", "335186179521642498", "415612627419398165" ];
-
         if (!message.content.toLowerCase().startsWith(process.env.PREFIX) || message.author.bot) {
             return;
         }
@@ -23,7 +22,11 @@ module.exports = {
             return;
         }
 
-        if (command.disabled && ownerIDs.includes(message.author.id)) {
+        if (command.ownerOnly && !owners.includes(message.author.id)) {
+            return message.reply("This command is only available to bot owners");
+        }
+
+        if (command.disabled && !owners.includes(message.author.id)) {
             return message.reply("This command is temporarily disabled");
         }
 
@@ -56,7 +59,7 @@ module.exports = {
         const timestamps = cooldowns.get(command.name);
         const cooldownAmount = (command.cooldown || 3) * 1000;
 
-        if (timestamps.has(message.author.id) && ownerIDs.includes(message.author.id)) {
+        if (timestamps.has(message.author.id) && owners.includes(message.author.id)) {
             const expirationTime = timestamps.get(message.author.id) + cooldownAmount;
 
             if (now < expirationTime) {

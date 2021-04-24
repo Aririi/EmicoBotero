@@ -1,5 +1,7 @@
+'use strict';
+
 const Discord = require('discord.js');
-const { name, repoURL, userColor } = require('../config.json');
+const { name, repoURL, color2 } = require('../config.json');
 let userEmbed; let title; let lastMsg;
 
 // matches text to a member in the guild, if applicable (so @ becomes optional)
@@ -56,7 +58,7 @@ module.exports = {
 
 			userEmbed = new Discord.MessageEmbed()
 				.attachFiles(['./icons/icon64.png'])
-				.setColor(userColor)
+				.setColor(color2)
 				.setTitle(`${userToCheck.tag}`)
 				.setThumbnail(`${userToCheck.displayAvatarURL({ dynamic:true })}?size=256`)
 				.setDescription('Here\'s what I know about them:')
@@ -92,13 +94,13 @@ module.exports = {
 			userToCheck = userToCheck.user;
 			userEmbed = new Discord.MessageEmbed()
 				.attachFiles(['./icons/icon64.png'])
-				.setColor(userColor)
+				.setColor(color2)
 				.setTitle(title)
 				.setThumbnail(`${userToCheck.displayAvatarURL({ dynamic:true })}?size=256`)
 				.setDescription('Here\'s what I know about them:')
 				.addFields(
 					{ name: 'Developer ID:', value: `\`${userToCheck.id}\``, inline: true },
-					{ name: 'Last known message:', value: lastMsg, inline: true },
+					//	{ name: 'Last known message:', value: lastMsg, inline: true },
 					{ name: 'Creation Date:', value: `${userToCheck.createdAt}` },
 
 				)

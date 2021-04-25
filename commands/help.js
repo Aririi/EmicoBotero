@@ -1,7 +1,6 @@
 "use strict";
 
-const { prefix, repoURL } = require("../config.json");
-let { name } = require("../config.json");
+const { name, color1, prefix, repoURL } = require("../config.json");
 const Discord = require("discord.js");
 
 module.exports = {
@@ -14,24 +13,31 @@ module.exports = {
         const data = [];
         const { commands } = message.client;
         const HelpEmbed = new Discord.MessageEmbed()
-            .setColor("#E7A84B")
-            .setTitle(`EmicoBotero's Commands:`)
+            .setColor(color1)
+            .setTitle(`${name}'s Commands:`)
             .attachFiles([ "./icons/icon64.png" ])
             .addFields(
-                { name: `EmicoBotero's current prefix: \`${prefix}\``, value: "\u200B", inline: false },
+                { name: `${name}'s current prefix: \`${prefix}\``, value: "\u200B", inline: false },
                 { name: "Command List:", value: `\`${commands.map(command => command.name).join(", ")}\`` },
                 { name: "How to get more information:", value: `\nYou can send \`${prefix}help [command name]\` to get info on a specific command.` },
             )
-            .setAuthor(`EmicoBotero Matrix`, "attachment://icon64.png", repoURL)
+            .setAuthor(`${name} Matrix`, "attachment://icon64.png", repoURL)
             .setTimestamp()
             .setFooter(`Requested by ${message.author.username}`, `${message.author.displayAvatarURL({ dynamic:true })}?size=32`);
 
-        if (args.length === 0) {
+        if (args) {
+            if (!args.length) {
+                if (message.channel.type === "dm") {
+                    return message.author.send(HelpEmbed);
+                }
+                return message.channel.send(HelpEmbed);
+            }
+        } else {
             return message.channel.send(HelpEmbed);
         }
 
-        name = args[0].toLowerCase();
-        const command = commands.get(name) || commands.find(c => c.aliases && c.aliases.includes(name));
+        const cmdName = args[0].toLowerCase();
+        const command = commands.get(cmdName) || commands.find(c => c.aliases && c.aliases.includes(cmdName));
 
         if (!command) {
             return message.reply("that's not a valid command!");

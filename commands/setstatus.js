@@ -8,20 +8,19 @@ module.exports = {
     devOnly: true,
     args: 2,
     execute(message, args) {
-        if (args[0].toLowerCase().match(/listening|watching|playing|streaming/gu)) {
-            const type = args[0].toUpperCase();
-            args.shift();
-            const text = args.join(" ");
+        const type = args[0].toUpperCase();
+        args.shift();
+        const text = args.join(" ");
 
-            return message.client.user.setActivity(text, { type })
+        if (type.match(/listening|watching|playing|streaming/u)) {
+            message.client.user.setActivity(text, { type })
                 .then(() => {
                     message.channel.send(`Status changed to \`${type}\` with text \`${text}\``)
                         .catch(console.error);
                 })
                 .catch(console.error);
+        } else {
+            message.channel.send("Type is not valid");
         }
-
-        message.channel.send("Invalid type of activity")
-            .catch(console.error);
     },
 };

@@ -2,10 +2,10 @@
 
 module.exports = {
     name: "purge",
-    description: "Deletes messages in the amount specified (1 to 99)",
+    description: "Deletes messages in the amount specified (1 to 100)",
     aliases: [ "delete", "prune" ],
     guildOnly: true,
-    args: true,
+    args: 1,
     execute(message, args) {
         const amount = parseInt(args[0], 10) + 1;
 

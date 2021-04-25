@@ -26,8 +26,8 @@ module.exports = {
 				.setTimestamp()
 				.setFooter(`Requested by ${message.author.username}`, `${message.author.displayAvatarURL({ dynamic:true })}?size=32`);
 
-			message.channel.send(infoEmbed);
 			sentMessage.delete();
+			message.channel.send(infoEmbed);
 		});
 	},
 };

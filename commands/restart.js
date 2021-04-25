@@ -6,9 +6,8 @@ module.exports = {
 	aliases: [ 'reboot', 'nap', 'sleep' ],
 	devOnly: true,
 	execute(message) {
-		console.log(`MAIN: ${message.author.tag} {${message.author.id}} has executed the restart command.`);
+		console.log(`${message.author.tag} has restarted the bot`);
 
-		message.channel.send('Clearing irrelevant list.\n(Reinstatiating in 1.618 seconds.)')
-			.then(process.exit(0));
+		process.exit(0);
 	},
 };

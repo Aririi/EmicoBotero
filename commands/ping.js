@@ -10,7 +10,7 @@ module.exports = {
 		const start = Date.now();
 		message.channel.send(
 			new MessageEmbed()
-				.setDescription('Ping'),
+				.setDescription('**Pong!**'),
 		).then((msg) => {
 			const ping = Date.now() - start;
 			msg.edit(

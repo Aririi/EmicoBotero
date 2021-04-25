@@ -9,19 +9,20 @@ const cooldowns = new Collection();
 module.exports = {
 	name: 'message',
 	execute(message) {
-		console.log(`[${message.author.tag}: ${message.cleanContent}]`);
+		// console.log(`[${message.author.tag}: ${message.cleanContent}]`);
+
 		if (!message.content.toLowerCase().startsWith(prefix) || message.author.bot) {
 			return;
 		}
-		// log for current issue of admin array being rounded and includes() failing to be true when it should be (line 26)
-		console.log(admins.includes(message.author.id), message.author.id, admins);
 
 		const args = message.content.slice(prefix.length).trim().split(/ +/gu);
 		const commandName = args.shift().toLowerCase();
 
 		const command = message.client.commands.get(commandName) || message.client.commands.find(cmd => cmd.aliases && cmd.aliases.includes(commandName));
 
-		if (!command) {	return;	}
+		if (!command) {
+			return;
+		}
 
 		if (command.devOnly && !admins.includes(message.author.id)) {
 			return message.channel.send(`${message.author.username}: This command can only be used by adminstrators.`);
@@ -42,7 +43,9 @@ module.exports = {
 			}
 		}
 
-		if (!command) return message.channel.send(`${message.author.username}: This is not a valid command.`).then(sentMessage => sentMessage.delete({ timeout: 3000 }));
+		if (!command) {
+			return message.channel.send(`${message.author.username}: This is not a valid command.`).then(sentMessage => sentMessage.delete({ timeout: 3000 }));
+		}
 
 		if (command.args && args.length < command.args) {
 			let reply = `${message.author.username}: You did not provide enough arguments.`;

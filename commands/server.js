@@ -14,7 +14,6 @@ module.exports = {
 			.attachFiles([ './icons/icon64.png' ])
 			.setColor(color1)
 			.setTitle(message.guild.name)
-			.setThumbnail(`${message.guild.iconURL({ dynamic: true })}?size=2048`)
 			.addFields(
 				{ name: 'Owner:', value: message.guild.owner, inline: false },
 				{ name: 'Region:', value: message.guild.region, inline: true },
@@ -28,6 +27,11 @@ module.exports = {
 			)
 			.setTimestamp()
 			.setFooter(`Requested by ${message.author.username}`, `${message.author.displayAvatarURL({ dynamic:true })}?size=32`);
+
+		// checks of the server has an icon
+		if (message.guild.iconURL() !== null) {
+			serverInfo.setThumbnail(`${message.guild.iconURL({ dynamic: true })}?size=2048`);
+		}
 
 		message.channel.send(serverInfo)
 			.catch(console.error);

@@ -2,10 +2,10 @@
 
 module.exports = {
 	name: 'purge',
-	description: 'Deletes messages in the amount specified (1 to 99)',
+	description: 'Deletes messages in the amount specified (1 to 100)',
 	aliases: [ 'delete', 'prune' ],
 	guildOnly: true,
-	args: true,
+	args: 1,
 	execute(message, args) {
 		const amount = parseInt(args[0], 10) + 1;
 
@@ -17,8 +17,10 @@ module.exports = {
 		}
 
 		if (message.member.hasPermission('MANAGE_MESSAGES')) {
+			console.log(`${message.author.tag} has bulk deleted ${amount} messages in #${message.channel.name} in server ${message.guild.name}`);
+
 			message.channel.bulkDelete(amount, false)
-				.then(console.log(`Deleted ${amount} messages per ${message.author.tag}'s request`))
+				// .then(console.log(`Deleted ${amount} messages per ${message.author.tag}'s request`))
 				.catch(console.error);
 		}
 		else {

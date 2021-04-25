@@ -20,6 +20,7 @@ module.exports = {
 			console.log(`${message.author.tag} has bulk deleted ${amount} messages in #${message.channel.name} in server ${message.guild.name}`);
 
 			message.channel.bulkDelete(amount, false)
+				// .then(console.log(`Deleted ${amount} messages per ${message.author.tag}'s request`))
 				.catch(console.error);
 		}
 		else {

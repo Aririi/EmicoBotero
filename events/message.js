@@ -9,6 +9,8 @@ const cooldowns = new Collection();
 module.exports = {
 	name: 'message',
 	execute(message) {
+		// console.log(`[${message.author.tag}: ${message.cleanContent}]`);
+
 		if (!message.content.toLowerCase().startsWith(prefix) || message.author.bot) {
 			return;
 		}

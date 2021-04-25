@@ -17,7 +17,6 @@ module.exports = {
 
         if (message.member.hasPermission("MANAGE_MESSAGES")) {
             message.channel.bulkDelete(amount, false)
-                .then(console.log(`Deleted ${amount} messages per ${message.author.tag}'s request`))
                 .catch(console.error);
         } else {
             return message.reply("You need the `Manage Messages` permission to use this command");

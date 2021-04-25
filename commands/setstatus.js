@@ -12,7 +12,7 @@ module.exports = {
 		args.shift();
 		const text = args.join(' ');
 
-		if (type.match(/listening|watching|playing|streaming/u)) {
+		if (type.match(/LISTENING|WATCHING|PLAYING|STREAMING/iu)) {
 			message.client.user.setActivity(text, { type })
 				.then(() => {
 					message.channel.send(`Status changed to \`${type}\` with text \`${text}\``)

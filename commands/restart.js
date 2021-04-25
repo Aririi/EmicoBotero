@@ -6,6 +6,6 @@ module.exports = {
     aliases: [ "reboot", "nap", "sleep" ],
     devOnly: true,
     execute() {
-        process.exit(1);
+        process.exit(0);
     },
 };

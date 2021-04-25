@@ -17,6 +17,8 @@ module.exports = {
 		}
 
 		if (message.member.hasPermission('MANAGE_MESSAGES')) {
+			console.log(`${message.author.tag} has bulk deleted ${amount} messages in #${message.channel.name} in server ${message.guild.name}`);
+
 			message.channel.bulkDelete(amount, false)
 				.catch(console.error);
 		}

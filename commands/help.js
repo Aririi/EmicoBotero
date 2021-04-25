@@ -12,7 +12,8 @@ module.exports = {
 	execute(message, args) {
 		const data = [];
 		const { commands } = message.client;
-		const HelpEmbed = new Discord.MessageEmbed()
+
+		const helpEmbed = new Discord.MessageEmbed()
 			.setColor(color1)
 			.setTitle(`${name}'s Commands:`)
 			.attachFiles([ './icons/icon64.png' ])
@@ -25,16 +26,9 @@ module.exports = {
 			.setTimestamp()
 			.setFooter(`Requested by ${message.author.username}`, `${message.author.displayAvatarURL({ dynamic:true })}?size=32`);
 
-		if (args) {
-			if (!args.length) {
-				if (message.channel.type === 'dm') {
-					return message.author.send(HelpEmbed);
-				}
-				return message.channel.send(HelpEmbed);
-			}
-		}
-		else {
-			return message.channel.send(HelpEmbed);
+		// if it does not specify a command it should just send the embed
+		if (args.length === 0) {
+			return message.channel.send(helpEmbed);
 		}
 
 		const cmdName = args[0].toLowerCase();
@@ -46,6 +40,7 @@ module.exports = {
 
 		data.push(`**Name:** ${command.name}`);
 
+		// checks if the commands have those properties and promptly adds them if they do
 		if (command.aliases) {
 			data.push(`**Aliases:** \`${command.aliases.join(', ')}\``);
 		}

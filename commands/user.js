@@ -9,6 +9,7 @@ module.exports = {
 	aliases: [ 'userinfo' ],
 	usage: '<username/nickname>',
 	execute(message, args) {
+		// sets up stuff in embed that will always be the same
 		const userInfo = new MessageEmbed()
 			.attachFiles([ './icons/icon64.png' ])
 			.setDescription('Here\'s what I know about them:')
@@ -22,7 +23,7 @@ module.exports = {
 				.setThumbnail(`${message.author.displayAvatarURL({ dynamic:true })}?size=256`)
 				.addFields(
 					{ name: 'Developer ID:', value: `\`${message.author.id}\`` },
-					{ name: 'Last known message:', value: `${message.author.lastMessage ? `"${message.author.lastMessage}"` : 'Unknown'}`, inline: true },
+					// { name: 'Last known message:', value: `${message.author.lastMessage ? `"${message.author.lastMessage}"` : 'Unknown'}`, inline: true },
 					{ name: 'Creation Date:', value: `${message.author.createdAt}` },
 				);
 
@@ -30,9 +31,11 @@ module.exports = {
 				.catch(console.error);
 		}
 		else {
+			// checks if the member was mentioned
 			const userID = args[0].match(/^<@!?(?<id>\d+)>$/u);
 			let roles = '';
 
+			// if it was mentioned then you don't have to search for a member in the server
 			if (userID) {
 				message.guild.members.fetch(userID[1])
 					.then((member) => {
@@ -51,7 +54,7 @@ module.exports = {
 							.setThumbnail(`${member.user.displayAvatarURL({ dynamic:true })}?size=256`)
 							.addFields(
 								{ name: 'Developer ID:', value: `\`${member.id}\``, inline: true },
-								{ name: 'Last known message:', value: `${member.lastMessage ? `"${member.lastMessage}"` : 'Unknown'}`, inline: true },
+								// { name: 'Last known message:', value: `${member.lastMessage ? `"${member.lastMessage}"` : 'Unknown'}`, inline: true },
 								{ name: 'Creation Date:', value: `${member.user.createdAt}` },
 								{ name: 'Roles on this server:', value: roles },
 								{ name: 'Joined this server on:', value: member.joinedAt },
@@ -68,6 +71,7 @@ module.exports = {
 				message.guild.members.fetch()
 					.then((members) => {
 						members.forEach((member) => {
+							// only runs if a member has been found and the name matches
 							if (foundMember === false && (member.nickname && member.nickname.toLowerCase() === memberName || member.user.username.toLowerCase() === memberName)) {
 								foundMember = true;
 
@@ -86,7 +90,7 @@ module.exports = {
 									.setThumbnail(`${member.user.displayAvatarURL({ dynamic:true })}?size=256`)
 									.addFields(
 										{ name: 'Developer ID:', value: `\`${member.id}\``, inline: true },
-										{ name: 'Last known message:', value: `${member.lastMessage ? `"${member.lastMessage}"` : 'Unknown'}`, inline: true },
+										// { name: 'Last known message:', value: `${member.lastMessage ? `"${member.lastMessage}"` : 'Unknown'}`, inline: true },
 										{ name: 'Creation Date:', value: `${member.user.createdAt}` },
 										{ name: 'Roles on this server:', value: roles },
 										{ name: 'Joined this server on:', value: member.joinedAt },

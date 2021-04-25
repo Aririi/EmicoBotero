@@ -5,7 +5,9 @@ module.exports = {
 	description: 'Restarts the bot. Should reboot automatically. (devOnly)',
 	aliases: [ 'reboot', 'nap', 'sleep' ],
 	devOnly: true,
-	execute() {
+	execute(message) {
+		console.log(`${message.author.tag} has restarted the bot`);
+
 		process.exit(0);
 	},
 };

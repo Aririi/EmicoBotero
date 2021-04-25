@@ -28,6 +28,7 @@ module.exports = {
 			.setTimestamp()
 			.setFooter(`Requested by ${message.author.username}`, `${message.author.displayAvatarURL({ dynamic:true })}?size=32`);
 
+		// checks of the server has an icon
 		if (message.guild.iconURL() !== null) {
 			serverInfo.setThumbnail(`${message.guild.iconURL({ dynamic: true })}?size=2048`);
 		}

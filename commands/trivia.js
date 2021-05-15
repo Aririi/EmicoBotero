@@ -11,7 +11,7 @@ triviaDB.loadDatabase(function(err) {
 });
 
 module.exports = {
-	name: 'trivia',
+	name: 'trivia',j
 	description: 'Gets a random trivia question from OpenTDB.',
 	cooldown: 5,
 	disabled: true,
@@ -24,6 +24,25 @@ module.exports = {
 		let buff; let base64;
 		let index; let temp;
 		let time; let text;
+
+		// check if token exists, then see if it is valid by retrieving a trivia
+		const token = fs.readFile('./databases/trivia_token', (error, x) => {
+			if (error) {return console.error();}
+			else {return x.toString().token;}
+		});
+		if (token != string) {return;}
+		async function validateToken() {
+		}
+		// if token is invalid, renew it and write to file for next use
+		// preserving the token helps avoid repeat questions
+		// once the token is valid, retrieve trivia data
+		// decode recieved info from base64 into a trivia class
+		// format said class into a rich embed, randomizing the answer if needed and if not a true/false
+		// send the embed and start the timer for collection
+		// once n seconds have passed, allow collection from other users (not author users)
+		// when total time to answer question has passed, stop collection and show answer(s)
+		// if the correct answer is recieved, case insensitive, either by number or content, stop collection early and respond
+		// if stop/quit/terminate/cancel is recieved, stop collection and stop command
 
 		// gets the token stored on last run, if none or invalid, will be fetched and stored for later use
 		fs.readFile('./databases/trivia_token', (error, txtString) => {

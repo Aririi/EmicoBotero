@@ -11,7 +11,7 @@ triviaDB.loadDatabase(function(err) {
 });
 
 module.exports = {
-	name: 'trivia',j
+	name: 'trivia',
 	description: 'Gets a random trivia question from OpenTDB.',
 	cooldown: 5,
 	disabled: true,

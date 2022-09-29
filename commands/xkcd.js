@@ -1,58 +1,115 @@
-'use strict';
+"use strict";
 
-const xkcd = require('xkcd');
-const fetch = require('node-fetch');
-const Discord = require('discord.js');
-const { color3 } = require('../config.json');
+const { get } = require("https");
+const { join: joinPaths } = require("node:path");
+const {
+    ChatInputCommandInteraction, /* eslint-disable-line no-unused-vars */
+    EmbedBuilder,
+    PermissionsBitField,
+    SlashCommandBuilder
+} = require("discord.js");
+
+/**
+ * @param {String} url
+ */
+function getComic(url) {
+    return new Promise((resolve, reject) => {
+        get(`${url}/info.0.json`, (res) => {
+            if (res.statusCode === 200) {
+                const buf = [];
+                res.on("data", (chunk) => buf.push(chunk));
+
+                res.on("end", () => {
+                    resolve(JSON.parse(Buffer.concat(buf).toString()));
+                });
+            } else {
+                res.resume();
+                reject(new Error(`Image request failed, ${res.statusMessage}: ${res.statusCode}`));
+            }
+        });
+    });
+}
 
 module.exports = {
-	name: 'xkcd',
-	description: 'Fetches XKCD comics. Provide \'latest\' to get the most recent, a specific number, or nothing to get a random one.',
-	usage: '<latest/number>',
-	execute(message, args) {
-		let title;
+    data: new SlashCommandBuilder()
+        .setName("xkcd")
+        .setDescription("Fetches XKCD comics")
+        .addBooleanOption(
+            (option) => option.setName("latest")
+                .setDescription("Whether to fetch the latest comic (takes priority over number)")
+                .setRequired(false)
+        )
+        .addNumberOption(
+            (option) => option.setName("num")
+                .setDescription("Comic number")
+                .setMinValue(1)
+                .setMaxValue(10000)
+                .setRequired(false)
+        ),
+    permissions: new PermissionsBitField([
+        "AttachFiles",
+        "SendMessages",
+        "SendMessagesInThreads"
+    ]),
+    /** @param {ChatInputCommandInteraction} interaction */
+    async execute(interaction) {
+        await interaction.deferReply();
 
-		// checks if a number or 'latest' was provided, fetching each respectively
-		if (!isNaN(args[0])) {return checkNum();}
-		else if (args[0] === 'latest') {return getLatest();}
-		// if no argument was provided, get a random comic
-		getRandom();
+        const latest = interaction.options.getBoolean("latest");
+        const num = interaction.options.getNumber("num");
 
+        const xkcdImg = joinPaths(__dirname, "../img/xkcd.jpg");
+        const embed = new EmbedBuilder()
+            .setColor("Random")
+            .setThumbnail("attachment://xkcd.jpg");
 
-		// gets the latest comic from XKCD
-		function getLatest() {
-			title = 'Latest:';
-			return xkcd(function(comic) {sendEmbed(comic, title);});
-		}
-		// gets the most recent comic to determine the latest issue, then pick a random number using RNG to get a random comic
-		function getRandom() {
-			xkcd(function(comic, rng) {
-				rng = Math.ceil(Math.random() * comic.num);
-				if (rng > comic.num) {rng--;} title = 'Random XKCD:';
-				xkcd(rng, function(comic2) {sendEmbed(comic2, title);});
-			});
-		}
-		// checks the number of the comic provided for validity
-		async function checkNum() {
-			const check = await fetch(`https://xkcd.com/${args[0]}/`);
-			if (check.status === 404) {return message.channel.send(`${message.author.username}: That isn't a valid comic number.`);}
-			title = `#${args[0]}:`;
-			return xkcd(args[0], function(comic) {sendEmbed(comic, title);},
-			);
-		}
-		// sends the embed containing the resulting comic
-		function sendEmbed(comic) {
-			const comicEmbed = new Discord.MessageEmbed()
-				.setColor(color3)
-				.setTitle(`${title} ${comic.title}`)
-				.attachFiles(['./icons/xkcd.jpg'])
-				.setAuthor('XKCD Comic', 'attachment://xkcd.jpg', `https://xkcd.com/${comic.num}/`)
-				.setDescription(comic.alt)
-				.setImage(comic.img)
-				.setTimestamp()
-				.setFooter(`Requested by ${message.author.username}`, `${message.author.displayAvatarURL({ dynamic:true })}?size=32`);
-			return message.channel.send(comicEmbed)
-				.catch(console.error);
-		}
-	},
+        let latestComic = {};
+        try {
+            latestComic = await getComic("https://xkcd.com");
+        } catch (error) {
+            console.error(
+                "An error occurred while getting xkcd comic: "
+                + `${error.name ?? "Unknown error"}: ${error.message ?? "Unknown"}`
+            );
+        }
+
+        if (latest) {
+            embed.setTitle(latestComic.title)
+                .setURL(`https://xkcd.com/${latestComic.num}`)
+                .setDescription(latestComic.alt)
+                .setImage(latestComic.img);
+
+            await interaction.editReply({ embeds: [embed], files: [xkcdImg] });
+            return;
+        }
+
+        let url = "https://xkcd.com";
+        if (num) {
+            if (num > latestComic.num) {
+                await interaction.editReply(`Comic #${num} doesn't exist`);
+                return;
+            }
+
+            url += `/${num}`;
+        } else {
+            url += `/${Math.floor(Math.random() * latestComic.num)}`;
+        }
+
+        let comic = {};
+        try {
+            comic = await getComic(url);
+        } catch (error) {
+            console.error(
+                "An error occurred while getting xkcd comic: "
+                + `${error.name ?? "Unknown error"}: ${error.message ?? "Unknown"}`
+            );
+        }
+
+        embed.setTitle(comic.title)
+            .setURL(`https://xkcd.com/${comic.num}`)
+            .setDescription(comic.alt)
+            .setImage(comic.img);
+
+        await interaction.editReply({ embeds: [embed], files: [xkcdImg] });
+    }
 };

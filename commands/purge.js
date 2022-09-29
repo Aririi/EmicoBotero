@@ -1,30 +1,67 @@
-'use strict';
+"use strict";
+
+const {
+    ChatInputCommandInteraction, /* eslint-disable-line no-unused-vars */
+    PermissionsBitField,
+    SlashCommandBuilder
+} = require("discord.js");
+const { Flags: { ManageMessages } } = PermissionsBitField;
 
 module.exports = {
-	name: 'purge',
-	description: 'Deletes messages in the amount specified (1 to 100)',
-	aliases: [ 'delete', 'prune' ],
-	guildOnly: true,
-	args: 1,
-	execute(message, args) {
-		const amount = parseInt(args[0], 10) + 1;
+    data: new SlashCommandBuilder()
+        .setName("purge")
+        .setDescription("Bulk deletes messages")
+        .setDefaultMemberPermissions(ManageMessages)
+        .addIntegerOption(
+            (option) => option.setName("amount")
+                .setDescription("How many messages to delete")
+                .setRequired(true)
+        )
+        .setDMPermission(false),
+    permissions: new PermissionsBitField([
+        "ManageMessages",
+        "SendMessages",
+        "SendMessagesInThreads"
+    ]),
+    /** @param {ChatInputCommandInteraction} interaction */
+    async execute(interaction) {
+        await interaction.deferReply();
 
-		if (isNaN(amount)) {
-			return message.reply('That doesn\'t seem to be a valid number');
-		}
-		else if (amount <= 1 || amount > 100) {
-			return message.reply('You need to input a number between 1 and 100');
-		}
+        const amount = interaction.options.getInteger("amount");
+        let remainingAmount = amount;
+        if (amount < 1) {
+            await interaction.editReply("The amount must be greater than zero");
+            return;
+        } else if (amount <= 100) {
+            const deleted = await interaction.channel.bulkDelete(amount, true);
+            remainingAmount -= deleted.size;
 
-		if (message.member.hasPermission('MANAGE_MESSAGES')) {
-			console.log(`${message.author.tag} has bulk deleted ${amount} messages in #${message.channel.name} in server ${message.guild.name}`);
+            if (remainingAmount === 0) {
+                return;
+            }
+        } else {
+            while (true) {
+                const deleted = interaction.channel.bulkDelete(100, true);
+                remainingAmount -= deleted.size;
 
-			message.channel.bulkDelete(amount, false)
-				// .then(console.log(`Deleted ${amount} messages per ${message.author.tag}'s request`))
-				.catch(console.error);
-		}
-		else {
-			return message.reply('You need the `Manage Messages` permission to use this command');
-		}
-	},
+                if (remainingAmount === 0 || deleted.size < 100) {
+                    break;
+                }
+            }
+
+            if (remainingAmount === 0) {
+                return;
+            }
+        }
+
+        const remainingMessages = interaction.channel.messages.fetch({
+            limit: remainingAmount,
+            cache: false
+        });
+
+        remainingMessages.map((message) => message.delete());
+
+        await Promise.allSettled(remainingMessages.keys());
+        await interaction.editReply(`Successfully deleted ${amount} messages`);
+    }
 };

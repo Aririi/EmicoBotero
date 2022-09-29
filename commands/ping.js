@@ -1,22 +1,38 @@
-'use strict';
+"use strict";
 
-const { MessageEmbed } = require('discord.js');
+const {
+    ChatInputCommandInteraction, /* eslint-disable-line no-unused-vars */
+    EmbedBuilder,
+    PermissionsBitField,
+    SlashCommandBuilder
+} = require("discord.js");
 
 module.exports = {
-	name: 'ping',
-	description: 'Pong! (Shows latency between bot and server)',
-	cooldown: 5,
-	execute(message) {
-		const start = Date.now();
-		message.channel.send(
-			new MessageEmbed()
-				.setDescription('**Pong!**'),
-		).then((msg) => {
-			const ping = Date.now() - start;
-			msg.edit(
-				new MessageEmbed()
-					.setDescription(`**Pong!**\n\`Latency: ${ping}ms\``),
-			);
-		}).catch(console.error);
-	},
+    data: new SlashCommandBuilder()
+        .setName("ping")
+        .setDescription("Tests API and client delay")
+        .setDMPermission(true),
+    permissions: new PermissionsBitField([
+        "SendMessages",
+        "SendMessagesInThreads"
+    ]),
+    /** @param {ChatInputCommandInteraction} interaction */
+    async execute(interaction) {
+        const message = await interaction.deferReply({ fetchReply: true });
+
+        const embed = new EmbedBuilder()
+            .setColor("Random")
+            .setTitle("Pong!")
+            .addFields({
+                name: "API latency",
+                value: `${interaction.client.ws.ping}ms`,
+                inline: true
+            }, {
+                name: "Client latency",
+                value: `${message.createdTimestamp - interaction.createdTimestamp}ms`,
+                inline: true
+            });
+
+        await interaction.editReply({ embeds: [embed] });
+    }
 };

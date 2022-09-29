@@ -1,9 +1,14 @@
 {
-	"name": "EmicoBotero",
-	"prefix": "e!",
-	"repoURL": "https://github.com/Aririi/EmicoBotero",
-	"admins": [ "335186179521642498", "447997781190377484", "409623638913056779", "415612627419398165" ],
-	"color1": "#036042",
-	"color2": "#055e6b",
-	"color3": "#441580"
+    "developerIds": [
+        "409623638913056779",
+        "447997781190377484",
+        "335186179521642498"
+    ],
+    "testServer": "782360450582708255",
+    "errorChannels": [
+        "https://discord.com/api/webhooks/1001247786978787408/NmZ50vxXWnEFka3N81znGaByt4XA-NMIyspBw2SK6NPtRlzPI37J-kkYcwQ2b5Y8-8ek"
+    ],
+    "782360450582708255": [
+        "782360450582708255"
+    ]
 }
